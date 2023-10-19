@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "@/trpc/react";
-import ThemeProvider from "@/components/theme-provides";
+import ThemeProvider from "@/components/theme-provider";
 import { type Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { SiteHeader } from "@/components/site-header";
