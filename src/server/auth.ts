@@ -9,6 +9,8 @@ import DiscordProvider from "next-auth/providers/discord";
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
 import { mysqlTable } from "drizzle-orm/mysql-core";
+import { whitelist } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -45,6 +47,15 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
       },
     }),
+    signIn: async ({ user }) =>
+      !!user.email &&
+      (
+        await db
+          .select()
+          .from(whitelist)
+          .where(eq(whitelist.email, user.email))
+          .limit(1)
+      ).length === 1,
   },
   adapter: DrizzleAdapter(db, mysqlTable),
   providers: [

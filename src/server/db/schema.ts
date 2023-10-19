@@ -81,3 +81,7 @@ export const verificationTokens = mysqlTable(
     compoundKey: primaryKey(vt.identifier, vt.token),
   }),
 );
+
+export const whitelist = mysqlTable("whitelist", {
+  email: varchar("email", { length: 255 }).notNull().primaryKey(),
+});
