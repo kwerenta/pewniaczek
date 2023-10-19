@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { TRPCReactProvider } from "@/trpc/react";
 import ThemeProvider from "@/components/theme-provides";
 import { type Metadata } from "next";
+import { cn } from "@/lib/utils";
+import { SiteHeader } from "@/components/site-header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,8 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+    <html lang="pl" suppressHydrationWarning>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          inter.variable,
+        )}
+      >
         <TRPCReactProvider headers={headers()}>
           <ThemeProvider
             attribute="class"
@@ -35,7 +42,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <div className="relative flex min-h-screen flex-col">
+              <SiteHeader />
+              <div className="flex-1">{children}</div>
+            </div>
           </ThemeProvider>
         </TRPCReactProvider>
       </body>
