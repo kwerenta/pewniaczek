@@ -13,7 +13,7 @@ export default async function Home() {
           <h2 className="text-3xl">w pełni legalny bukmacher</h2>
         </div>
         <div className="flex flex-col items-center justify-center gap-4">
-          <p className="text-center text-2xl text-white">
+          <p className="text-center text-2xl">
             {session && <span>Zalogowano jako {session.user.name}</span>}
           </p>
         </div>

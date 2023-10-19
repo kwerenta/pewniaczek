@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: "Pewniaczek",
   description: "W pełni legalny bukmacher",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
 };
 
 export default function RootLayout({
@@ -35,19 +39,19 @@ export default function RootLayout({
           inter.variable,
         )}
       >
-        <TRPCReactProvider headers={headers()}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider headers={headers()}>
             <div className="relative flex min-h-screen flex-col">
               <SiteHeader />
               <div className="flex-1">{children}</div>
             </div>
-          </ThemeProvider>
-        </TRPCReactProvider>
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
