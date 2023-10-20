@@ -85,3 +85,7 @@ export const verificationTokens = mysqlTable(
 export const whitelist = mysqlTable("whitelist", {
   email: varchar("email", { length: 255 }).notNull().primaryKey(),
 });
+
+export const admins = mysqlTable("admins", {
+  userId: varchar("user_id", { length: 255 }).notNull().primaryKey(),
+});

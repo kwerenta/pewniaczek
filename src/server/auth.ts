@@ -9,7 +9,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
 import { mysqlTable } from "drizzle-orm/mysql-core";
-import { whitelist } from "./db/schema";
+import { admins, whitelist } from "./db/schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -22,6 +22,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      isAdmin: boolean;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -40,13 +41,23 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const isAdmin = await db
+        .select()
+        .from(admins)
+        .where(eq(admins.userId, user.id))
+        .limit(1)
+        .then((res) => res.length === 1);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          isAdmin,
+        },
+      };
+    },
     signIn: async ({ user }) =>
       !!user.email &&
       (
