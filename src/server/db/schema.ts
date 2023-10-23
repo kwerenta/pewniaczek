@@ -4,8 +4,10 @@ import {
   int,
   mysqlTable,
   primaryKey,
+  serial,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
 import { type AdapterAccount } from "next-auth/adapters";
@@ -89,3 +91,15 @@ export const whitelist = mysqlTable("whitelist", {
 export const admins = mysqlTable("admins", {
   userId: varchar("user_id", { length: 255 }).notNull().primaryKey(),
 });
+
+export const categories = mysqlTable(
+  "category",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    slug: varchar("slug", { length: 255 }).notNull(),
+  },
+  (table) => ({
+    uniqueSlugIndex: uniqueIndex("unique_slug_index").on(table.slug),
+  }),
+);
