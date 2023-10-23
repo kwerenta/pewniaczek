@@ -7,8 +7,6 @@ import { TRPCReactProvider } from "@/trpc/react";
 import ThemeProvider from "@/components/theme-provider";
 import { type Metadata } from "next";
 import { cn } from "@/lib/utils";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,9 +46,7 @@ export default function RootLayout({
         >
           <TRPCReactProvider headers={headers()}>
             <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <div className="flex-1">{children}</div>
-              <SiteFooter />
+              {children}
             </div>
           </TRPCReactProvider>
         </ThemeProvider>

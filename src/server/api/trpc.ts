@@ -129,7 +129,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
-/** Reusable middleware that enforces users are logged in and are admnins before running the procedure. */
+/** Reusable middleware that enforces users are logged in and are admins before running the procedure. */
 const enforceUserIsAdmin = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
