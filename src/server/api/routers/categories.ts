@@ -8,6 +8,7 @@ import { slugify } from "@/lib/utils";
 import { newCategorySchema } from "@/lib/validators/category";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 export const categoriesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -32,5 +33,10 @@ export const categoriesRouter = createTRPCRouter({
         });
 
       await ctx.db.insert(categories).values({ name: input.name, slug });
+    }),
+  delete: authorizedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.delete(categories).where(eq(categories.id, input.id));
     }),
 });
