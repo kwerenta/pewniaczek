@@ -4,15 +4,10 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "../trpc";
-import { z } from "zod";
 import { slugify } from "@/lib/utils";
-
-export const newCategorySchema = z.object({
-  name: z
-    .string()
-    .min(2, "Nazwa musi mieć co najmniej 2 znaki")
-    .max(255, "Nazwa może mieć maksymalnie 255 znaków"),
-});
+import { newCategorySchema } from "@/lib/validators/category";
+import { eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const categoriesRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -22,6 +17,20 @@ export const categoriesRouter = createTRPCRouter({
     .input(newCategorySchema)
     .mutation(async ({ ctx, input }) => {
       const slug = slugify(input.name);
+
+      const isExisting = await ctx.db
+        .select({ slug: categories.slug })
+        .from(categories)
+        .where(eq(categories.slug, slug))
+        .limit(1)
+        .then((rows) => rows.length > 0);
+
+      if (isExisting)
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Kategoria o takim adresie już istnieje",
+        });
+
       await ctx.db.insert(categories).values({ name: input.name, slug });
     }),
 });

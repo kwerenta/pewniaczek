@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "@/trpc/react";
 import ThemeProvider from "@/components/theme-provider";
 import { type Metadata } from "next";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
           <TRPCReactProvider headers={headers()}>
             <div className="relative flex min-h-screen flex-col">
               {children}
+              <Toaster />
             </div>
           </TRPCReactProvider>
         </ThemeProvider>

@@ -15,28 +15,47 @@ import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
-import { newCategorySchema } from "@/server/api/routers/categories";
-import { type z } from "zod";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import {
+  newCategorySchema,
+  type NewCategoryInput,
+} from "@/lib/validators/category";
+import { useToast } from "@/components/ui/use-toast";
 
 export function NewCategoryForm() {
   const [slug, setSlug] = useState("");
+  const { toast } = useToast();
 
   const categoryMutation = api.categories.create.useMutation();
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof newCategorySchema>>({
+  const form = useForm<NewCategoryInput>({
     resolver: zodResolver(newCategorySchema),
     defaultValues: {
       name: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof newCategorySchema>) => {
-    await categoryMutation.mutateAsync(values);
-    router.push("/admin/categories");
-    router.refresh();
+  const onSubmit = (values: NewCategoryInput) => {
+    categoryMutation.mutate(values, {
+      onSuccess: () => {
+        router.push("/admin/categories");
+        router.refresh();
+
+        toast({
+          title: "Kategoria została stworzona",
+          description: "Możesz teraz dodać wydarzenia do tej kategorii",
+        });
+      },
+      onError(error) {
+        toast({
+          variant: "destructive",
+          title: "Błąd podczas tworzenia kategorii",
+          description: error.message,
+        });
+      },
+    });
   };
 
   return (
@@ -68,7 +87,9 @@ export function NewCategoryForm() {
             Wygenerowany uproszczony adres URL kategorii
           </p>
         </div>
-        <Button type="submit">Stwórz</Button>
+        <Button disabled={categoryMutation.isLoading} type="submit">
+          Stwórz
+        </Button>
       </form>
     </Form>
   );
