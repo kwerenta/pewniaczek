@@ -11,7 +11,6 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { slugify } from "@/lib/utils";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
@@ -22,6 +21,7 @@ import {
   type NewCategoryInput,
 } from "@/lib/validators/category";
 import { useToast } from "@/components/ui/use-toast";
+import { LoadingButton } from "@/components/loading-button";
 
 export function NewCategoryForm() {
   const [slug, setSlug] = useState("");
@@ -87,9 +87,13 @@ export function NewCategoryForm() {
             Wygenerowany uproszczony adres URL kategorii
           </p>
         </div>
-        <Button disabled={categoryMutation.isLoading} type="submit">
+        <LoadingButton
+          isLoading={categoryMutation.isLoading}
+          loadingText="Tworzenie..."
+          type="submit"
+        >
           Stwórz
-        </Button>
+        </LoadingButton>
       </form>
     </Form>
   );
