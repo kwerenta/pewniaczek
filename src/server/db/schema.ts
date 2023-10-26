@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  bigint,
   index,
   int,
   mysqlTable,
@@ -101,5 +102,48 @@ export const categories = mysqlTable(
   },
   (table) => ({
     uniqueSlugIndex: uniqueIndex("unique_slug_index").on(table.slug),
+  }),
+);
+
+export const betTypes = mysqlTable("bet_type", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+});
+
+export const betTypesRelations = relations(betTypes, ({ many }) => ({
+  optionsOnTypes: many(betOptionsOnTypes),
+}));
+
+export const betOptions = mysqlTable("bet_option", {
+  id: serial("id").primaryKey(),
+  value: varchar("value", { length: 255 }).notNull(),
+});
+
+export const betOptionsRelations = relations(betOptions, ({ many }) => ({
+  optionsOnTypes: many(betOptionsOnTypes),
+}));
+
+export const betOptionsOnTypes = mysqlTable(
+  "bet_option_on_type",
+  {
+    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
+    optionId: bigint("bet_option_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    compoundKey: primaryKey(table.typeId, table.optionId),
+  }),
+);
+
+export const betOptionsOnTypesRelations = relations(
+  betOptionsOnTypes,
+  ({ one }) => ({
+    type: one(betTypes, {
+      fields: [betOptionsOnTypes.typeId],
+      references: [betTypes.id],
+    }),
+    option: one(betOptions, {
+      fields: [betOptionsOnTypes.optionId],
+      references: [betOptions.id],
+    }),
   }),
 );

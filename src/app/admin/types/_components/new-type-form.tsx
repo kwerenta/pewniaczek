@@ -12,34 +12,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  type NewOptionTypeInput,
+  newOptionTypeSchema,
+} from "@/lib/validators/type";
+import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-
-const NewOptionTypeSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Nazwa musi mieć co najmniej 3 znaki")
-    .max(255, "Nazwa może mieć maksymalnie 255 znaków"),
-  options: z
-    .array(
-      z.object({
-        value: z
-          .string()
-          .min(1, "Wartość musi mieć co najmniej 1 znak")
-          .max(255, "Wartość może mieć maksymalnie 255 znaków"),
-      }),
-    )
-    .min(2, "Musisz dodać co najmniej 2 opcje")
-    .max(16, "Możesz dodać maksymalnie 16 opcji"),
-});
-
-type NewOptionTypeInput = z.infer<typeof NewOptionTypeSchema>;
 
 export function NewTypeForm() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const typesMutation = api.types.create.useMutation();
+
   const form = useForm<NewOptionTypeInput>({
-    resolver: zodResolver(NewOptionTypeSchema),
+    resolver: zodResolver(newOptionTypeSchema),
     defaultValues: {
       name: "",
       options: [{ value: "" }],
@@ -56,7 +46,24 @@ export function NewTypeForm() {
   });
 
   const onSubmit = (values: NewOptionTypeInput) => {
-    console.log(values);
+    typesMutation.mutate(values, {
+      onSuccess: () => {
+        router.push("/admin/types");
+        router.refresh();
+
+        toast({
+          title: "Sukces",
+          description: "Pomyślnie utworzono nowy rodzaj zakładu",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Błąd",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
