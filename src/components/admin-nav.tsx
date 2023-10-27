@@ -4,6 +4,7 @@ import NavLink from "./nav-link";
 export function AdminNav() {
   return (
     <MainNavContainer isAdminPage>
+      <NavLink href="/admin/events">Wydarzenia</NavLink>
       <NavLink href="/admin/categories">Kategorie</NavLink>
       <NavLink href="/admin/types">Rodzaje zakładów</NavLink>
     </MainNavContainer>
