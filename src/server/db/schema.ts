@@ -1,8 +1,10 @@
 import { relations, sql } from "drizzle-orm";
 import {
   bigint,
+  char,
   index,
   int,
+  mysqlEnum,
   mysqlTable,
   primaryKey,
   serial,
@@ -147,3 +149,84 @@ export const betOptionsOnTypesRelations = relations(
     }),
   }),
 );
+
+export const events = mysqlTable("event", {
+  id: char("id", { length: 36 }).primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  time: timestamp("time", { mode: "date" }).notNull(),
+  categoryId: bigint("category_id", { mode: "number" }).notNull(),
+  status: mysqlEnum("status", ["upcoming", "live", "finished", "cancelled"])
+    .notNull()
+    .default("upcoming"),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [events.categoryId],
+    references: [categories.id],
+  }),
+  betTypesOnEvents: many(betTypesOnEvents),
+  odds: many(odds),
+}));
+
+export const betTypesOnEvents = mysqlTable(
+  "bet_type_on_event",
+  {
+    eventId: char("event_id", { length: 36 }).notNull(),
+    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    compoundKey: primaryKey(table.eventId, table.typeId),
+  }),
+);
+
+export const betTypesOnEventsRelations = relations(
+  betTypesOnEvents,
+  ({ one }) => ({
+    event: one(events, {
+      fields: [betTypesOnEvents.eventId],
+      references: [events.id],
+    }),
+    type: one(betTypes, {
+      fields: [betTypesOnEvents.typeId],
+      references: [betTypes.id],
+    }),
+  }),
+);
+
+export const odds = mysqlTable(
+  "odds",
+  {
+    eventId: char("event_id", { length: 36 }).notNull(),
+    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
+    optionId: bigint("bet_option_id", { mode: "number" }).notNull(),
+    value: int("value").notNull(),
+  },
+  (table) => ({
+    compoundKey: primaryKey(table.eventId, table.typeId, table.optionId),
+  }),
+);
+
+export const oddsRelations = relations(odds, ({ one }) => ({
+  event: one(events, {
+    fields: [odds.eventId],
+    references: [events.id],
+  }),
+  type: one(betTypes, {
+    fields: [odds.typeId],
+    references: [betTypes.id],
+  }),
+  option: one(betOptions, {
+    fields: [odds.optionId],
+    references: [betOptions.id],
+  }),
+  optionOnType: one(betOptionsOnTypes, {
+    fields: [odds.typeId, odds.optionId],
+    references: [betOptionsOnTypes.typeId, betOptionsOnTypes.optionId],
+  }),
+  typeOnEvent: one(betTypesOnEvents, {
+    fields: [odds.eventId, odds.typeId],
+    references: [betTypesOnEvents.eventId, betTypesOnEvents.typeId],
+  }),
+}));
