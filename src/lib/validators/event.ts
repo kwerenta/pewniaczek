@@ -11,17 +11,19 @@ export const newEventSchema = z.object({
     .array(
       z.object({
         typeId: z.number().positive("Rodzaj zakładu musi być wybrany"),
-        options: z.array(
-          z.object({
-            optionId: z.coerce
-              .number()
-              .positive("Opcja zakładu musi być wybrana"),
-            odds: z
-              .number()
-              .gt(100, "Kurs musi być większy od 1")
-              .lte(100000, "Kurs musi być mniejszy od 1000"),
-          }),
-        ),
+        options: z
+          .array(
+            z.object({
+              optionId: z.coerce
+                .number()
+                .positive("Opcja zakładu musi być wybrana"),
+              odds: z
+                .number()
+                .gt(100, "Kurs musi być większy od 1")
+                .lte(100000, "Kurs musi być mniejszy od 1000"),
+            }),
+          )
+          .min(1, "Zakład musi mieć co najmniej jedną opcję"),
       }),
     )
     .min(1)
