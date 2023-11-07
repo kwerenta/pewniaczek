@@ -6,7 +6,7 @@ export default async function Home() {
   return (
     <main className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
       <div className="text-center">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+        <h1 className="text-5xl font-extrabold tracking-tight text-primary sm:text-[5rem]">
           pewniaczek
         </h1>
         <h2 className="text-3xl">w pełni legalny bukmacher</h2>
