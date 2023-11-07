@@ -3,6 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
   Form,
   FormControl,
   FormField,
@@ -17,46 +24,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { newEventSchema, type NewEventInput } from "@/lib/validators/event";
+import { type RouterOutputs } from "@/trpc/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addHours, format, setHours, setMinutes, startOfToday } from "date-fns";
 import { pl } from "date-fns/locale";
 import { CalendarIcon, CheckIcon, ChevronsUpDown } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
 import { NewBetForm } from "./new-bet-form";
-import { type RouterOutputs } from "@/trpc/shared";
-import {
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  Command,
-} from "@/components/ui/command";
-
-const newEventSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Nazwa wydarzenia musi mieć co najmniej 3 znaki")
-    .max(255, "Nazwa wydarzenia może mieć maksymalnie 255 znaków"),
-  time: z.date().min(new Date(), "Wydarzenie nie może być w przeszłości"),
-  categoryId: z.coerce.number().positive("Kategoria musi być wybrana"),
-  bets: z
-    .array(
-      z.object({
-        typeId: z.coerce.number().positive("Rodzaj zakładu musi być wybrany"),
-        options: z.array(
-          z.object({
-            optionId: z.coerce
-              .number()
-              .positive("Opcja zakładu musi być wybrana"),
-            odds: z.coerce.number().gt(100, "Kurs musi być większy od 1"),
-          }),
-        ),
-      }),
-    )
-    .min(1),
-});
-export type NewEventInput = z.infer<typeof newEventSchema>;
+import { api } from "@/trpc/react";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 interface NewEventFormProps {
   betTypesWithOptions: RouterOutputs["types"]["getAllWithOptions"];
@@ -67,6 +45,11 @@ export function NewEventForm({
   betTypesWithOptions,
   categories,
 }: NewEventFormProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const eventMutation = api.events.create.useMutation({});
+
   const form = useForm<NewEventInput>({
     resolver: zodResolver(newEventSchema),
     defaultValues: {
@@ -89,7 +72,23 @@ export function NewEventForm({
   } = useFieldArray({ control: form.control, name: "bets" });
 
   const onSubmit = (values: NewEventInput) => {
-    console.log(values);
+    eventMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: "Sukces!",
+          description: "Wydarzenie zostało dodane.",
+        });
+        router.refresh();
+        router.push("/admin/events");
+      },
+      onError: (error) => {
+        toast({
+          title: "Błąd!",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (

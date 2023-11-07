@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { type NewEventInput } from "@/lib/validators/event";
 import { type RouterOutputs } from "@/trpc/shared";
 import { CheckIcon, ChevronsUpDown, Trash2 } from "lucide-react";
 import {
@@ -29,7 +30,6 @@ import {
   useFormContext,
   type UseFieldArrayRemove,
 } from "react-hook-form";
-import { type NewEventInput } from "./new-event-form";
 
 interface NewBetFormProps {
   index: number;
