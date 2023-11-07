@@ -99,31 +99,39 @@ export function NewBetForm({
                   />
                   <CommandEmpty>Nie znaleziono takiego rodzaju.</CommandEmpty>
                   <CommandGroup>
-                    {betTypesWithOptions.map((betType) => (
-                      <CommandItem
-                        value={betType.name}
-                        key={betType.id}
-                        onSelect={() => {
-                          field.onChange(betType.id);
-                          replaceOptions(
-                            betType.options.map((option) => ({
-                              optionId: option.id,
-                              odds: 100,
-                            })),
-                          );
-                        }}
-                      >
-                        {betType.name}
-                        <CheckIcon
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            betType.id === field.value
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
+                    {betTypesWithOptions
+                      .filter(
+                        (type) =>
+                          !form
+                            .getValues("bets")
+                            .map((bet) => bet.typeId)
+                            .includes(type.id),
+                      )
+                      .map((betType) => (
+                        <CommandItem
+                          value={betType.name}
+                          key={betType.id}
+                          onSelect={() => {
+                            field.onChange(betType.id);
+                            replaceOptions(
+                              betType.options.map((option) => ({
+                                optionId: option.id,
+                                odds: 100,
+                              })),
+                            );
+                          }}
+                        >
+                          {betType.name}
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              betType.id === field.value
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </Command>
               </PopoverContent>

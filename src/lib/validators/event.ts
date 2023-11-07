@@ -16,7 +16,7 @@ export const newEventSchema = z.object({
             optionId: z.coerce
               .number()
               .positive("Opcja zakładu musi być wybrana"),
-            odds: z.coerce
+            odds: z
               .number()
               .gt(100, "Kurs musi być większy od 1")
               .lte(100000, "Kurs musi być mniejszy od 1000"),
