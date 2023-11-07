@@ -35,6 +35,7 @@ import { NewBetForm } from "./new-bet-form";
 import { api } from "@/trpc/react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { TimePicker } from "@/components/ui/time-picker";
 
 interface NewEventFormProps {
   betTypesWithOptions: RouterOutputs["types"]["getAllWithOptions"];
@@ -113,27 +114,27 @@ export function NewEventForm({
           name="time"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Data</FormLabel>
+              <FormLabel>Data i czas</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
                       variant={"outline"}
                       className={cn(
-                        "pl-3 text-left font-normal",
+                        "w-[280px] justify-start text-left font-normal",
                         !field.value && "text-muted-foreground",
                       )}
                     >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
                       {field.value ? (
-                        format(field.value, "PPPP", { locale: pl })
+                        format(field.value, "PPP HH:mm", { locale: pl })
                       ) : (
-                        <span>Wybierz datę</span>
+                        <span>Wybierz datę i czas</span>
                       )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     locale={pl}
@@ -149,31 +150,15 @@ export function NewEventForm({
                     disabled={(date) => date < startOfToday()}
                     initialFocus
                   />
+                  <div className="border-t border-border p-3">
+                    <TimePicker setDate={field.onChange} date={field.value} />
+                  </div>
                 </PopoverContent>
               </Popover>
-              <FormItem>
-                <FormLabel>Czas</FormLabel>
-                <FormControl>
-                  <Input
-                    type="time"
-                    {...field}
-                    value={field.value.toTimeString().slice(0, 5)}
-                    onChange={(e) => {
-                      const [hours, minutes] = e.target.value.split(":");
-                      field.onChange(
-                        setMinutes(
-                          setHours(field.value, Number(hours)),
-                          Number(minutes),
-                        ),
-                      );
-                    }}
-                  />
-                </FormControl>
-              </FormItem>
-              <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="categoryId"
