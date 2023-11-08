@@ -69,6 +69,7 @@ export const authOptions: NextAuthOptions = {
       ).length === 1,
   },
   adapter: DrizzleAdapter(db, mysqlTable),
+  pages: { signIn: "/login" },
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
