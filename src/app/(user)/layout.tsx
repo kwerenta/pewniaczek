@@ -1,3 +1,5 @@
+import { CategoriesSidebar } from "@/components/categories-sidebar";
+import { CouponSidebar } from "@/components/coupon-sidebar";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getServerAuthSession } from "@/server/auth";
@@ -14,7 +16,11 @@ export default async function UserLayout({
   return (
     <>
       <SiteHeader />
-      <div className="flex-1">{children}</div>
+      <div className="flex flex-1 gap-4 p-4">
+        <CategoriesSidebar />
+        <main className="flex-1">{children}</main>
+        <CouponSidebar />
+      </div>
       <SiteFooter />
     </>
   );
