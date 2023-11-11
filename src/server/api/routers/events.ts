@@ -12,9 +12,22 @@ import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export const eventsRouter = createTRPCRouter({
-  getAll: authorizedProcedure.query(
+  getAllWithCategory: authorizedProcedure.query(
     async ({ ctx }) =>
-      await ctx.db.select().from(events).orderBy(events.createdAt),
+      await ctx.db.query.events.findMany({
+        columns: {
+          categoryId: false,
+        },
+        orderBy: ({ time }, { asc }) => asc(time),
+        with: {
+          category: {
+            columns: {
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      }),
   ),
   getAllWithOdds: authorizedProcedure.query(
     async ({ ctx }) =>

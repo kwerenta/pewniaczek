@@ -170,6 +170,8 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   odds: many(odds),
 }));
 
+export type EventStatus = typeof events.$inferSelect.status;
+
 export const betTypesOnEvents = mysqlTable(
   "bet_type_on_event",
   {

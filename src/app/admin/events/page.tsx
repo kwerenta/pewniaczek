@@ -17,13 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type events } from "@/server/db/schema";
+import { type EventStatus } from "@/server/db/schema";
 import { api } from "@/trpc/server";
 import { LineChart } from "lucide-react";
 import Link from "next/link";
 
-type Status = typeof events.$inferSelect.status;
-const statusMapping: Record<Status, string> = {
+const statusMapping: Record<EventStatus, string> = {
   upcoming: "Nadchodzące",
   finished: "Zakończone",
   live: "Trwające",
