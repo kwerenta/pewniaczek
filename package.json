@@ -11,7 +11,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^0.3.2",
+    "@auth/drizzle-adapter": "latest",
     "@hookform/resolvers": "^3.3.2",
     "@planetscale/database": "^1.11.0",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -35,7 +35,7 @@
     "drizzle-orm": "^0.28.5",
     "lucide-react": "^0.288.0",
     "next": "latest",
-    "next-auth": "^4.23.0",
+    "next-auth": "latest",
     "next-themes": "^0.2.1",
     "react": "latest",
     "react-day-picker": "^8.9.1",
