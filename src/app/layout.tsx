@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import ThemeProvider from "@/components/theme-provider";
-import { type Metadata } from "next";
+import { type Viewport, type Metadata } from "next";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -16,14 +16,17 @@ const inter = Inter({
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Pewniaczek",
-  description: "W pełni legalny bukmacher",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
+};
+
+export const metadata: Metadata = {
+  title: "Pewniaczek",
+  description: "W pełni legalny bukmacher",
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export default function RootLayout({
