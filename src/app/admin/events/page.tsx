@@ -21,6 +21,7 @@ import {
 import { api } from "@/trpc/server";
 import { LineChart } from "lucide-react";
 import Link from "next/link";
+import { EventOptionsMenu } from "./_components/event-options-menu";
 
 export default async function EventsPage() {
   const events = await api.events.getAllWithOdds.query();
@@ -43,6 +44,7 @@ export default async function EventsPage() {
             <TableHead>Status</TableHead>
             <TableHead>Kategoria</TableHead>
             <TableHead>Kursy</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -58,7 +60,7 @@ export default async function EventsPage() {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button size="icon" variant="outline">
-                      <LineChart className="h-4 w-4" />
+                      <LineChart className="h-3.5 w-3.5" />
                       <span className="sr-only">Kursy</span>
                     </Button>
                   </DialogTrigger>
@@ -79,6 +81,9 @@ export default async function EventsPage() {
                     ))}
                   </DialogContent>
                 </Dialog>
+              </TableCell>
+              <TableCell>
+                <EventOptionsMenu eventId={event.id} />
               </TableCell>
             </TableRow>
           ))}

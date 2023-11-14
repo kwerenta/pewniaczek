@@ -10,6 +10,9 @@ import { newEventSchema } from "@/lib/validators/event";
 import "node:crypto";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+
+const eventIdSchema = z.object({ id: z.string().uuid() });
 
 export const eventsRouter = createTRPCRouter({
   getAllWithCategory: authorizedProcedure.query(
@@ -113,5 +116,24 @@ export const eventsRouter = createTRPCRouter({
           ),
         );
       });
+    }),
+  delete: authorizedProcedure
+    .input(eventIdSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx.delete(events).where(eq(events.id, input.id));
+        await tx.delete(odds).where(eq(odds.eventId, input.id));
+        await tx
+          .delete(betTypesOnEvents)
+          .where(eq(betTypesOnEvents.eventId, input.id));
+      });
+    }),
+  finish: authorizedProcedure
+    .input(eventIdSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(events)
+        .set({ status: "finished" })
+        .where(eq(events.id, input.id));
     }),
 });

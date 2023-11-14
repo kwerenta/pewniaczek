@@ -79,8 +79,8 @@ export function NewEventForm({
           title: "Sukces!",
           description: "Wydarzenie zostało dodane.",
         });
-        router.refresh();
         router.push("/admin/events");
+        router.refresh();
       },
       onError: (error) => {
         toast({
