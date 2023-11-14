@@ -1,3 +1,4 @@
+import { EventStatusBadge } from "@/components/event-status-badge";
 import { PageHeader } from "@/components/page-header";
 import { PageShell } from "@/components/page-shell";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -17,17 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type EventStatus } from "@/server/db/schema";
 import { api } from "@/trpc/server";
 import { LineChart } from "lucide-react";
 import Link from "next/link";
-
-const statusMapping: Record<EventStatus, string> = {
-  upcoming: "Nadchodzące",
-  finished: "Zakończone",
-  live: "Trwające",
-  cancelled: "Odwołane",
-};
 
 export default async function EventsPage() {
   const events = await api.events.getAllWithOdds.query();
@@ -57,7 +50,9 @@ export default async function EventsPage() {
             <TableRow key={event.id}>
               <TableCell>{event.name}</TableCell>
               <TableCell>{event.time.toLocaleString("pl-PL")}</TableCell>
-              <TableCell>{statusMapping[event.status]}</TableCell>
+              <TableCell>
+                <EventStatusBadge status={event.status} />
+              </TableCell>
               <TableCell>{event.category.name}</TableCell>
               <TableCell>
                 <Dialog>

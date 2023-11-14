@@ -1,27 +1,14 @@
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { EventStatusBadge } from "@/components/event-status-badge";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type EventStatus } from "@/server/db/schema";
 import { api } from "@/trpc/server";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import Link from "next/link";
-
-type StatusBadge = {
-  text: string;
-  variant: Exclude<BadgeProps["variant"], null | undefined>;
-};
-
-const statusBadgeMapping: Record<EventStatus, StatusBadge> = {
-  upcoming: { text: "Nadchodzące", variant: "outline" },
-  finished: { text: "Zakończone", variant: "secondary" },
-  live: { text: "Trwające", variant: "default" },
-  cancelled: { text: "Odwołane", variant: "destructive" },
-};
 
 export default async function Home() {
   const events = await api.events.getAllWithCategory.query();
@@ -43,9 +30,7 @@ export default async function Home() {
             <p className="text-sm text-muted-foreground">
               {format(event.time, "PPPPp", { locale: pl })}
             </p>
-            <Badge variant={statusBadgeMapping[event.status].variant}>
-              {statusBadgeMapping[event.status].text}
-            </Badge>
+            <EventStatusBadge status={event.status} />
           </CardHeader>
         </Card>
       ))}
