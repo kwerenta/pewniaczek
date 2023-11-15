@@ -5,7 +5,11 @@ import {
   events,
   odds,
 } from "@/server/db/schema";
-import { authorizedProcedure, createTRPCRouter } from "../trpc";
+import {
+  authorizedProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "../trpc";
 import { newEventSchema } from "@/lib/validators/event";
 import "node:crypto";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
@@ -15,7 +19,7 @@ import { z } from "zod";
 const eventIdSchema = z.object({ id: z.string().uuid() });
 
 export const eventsRouter = createTRPCRouter({
-  getAllWithCategory: authorizedProcedure.query(
+  getAllWithCategory: protectedProcedure.query(
     async ({ ctx }) =>
       await ctx.db.query.events.findMany({
         columns: {
@@ -32,6 +36,54 @@ export const eventsRouter = createTRPCRouter({
         },
       }),
   ),
+  getEventById: protectedProcedure
+    .input(eventIdSchema)
+    .query(async ({ ctx, input }) => {
+      const event = await ctx.db.query.events.findFirst({
+        columns: {
+          categoryId: false,
+        },
+        with: {
+          category: { columns: { name: true, slug: true } },
+          odds: {
+            columns: { value: true },
+            with: {
+              option: true,
+              type: true,
+            },
+          },
+        },
+        where: ({ id }, { eq }) => eq(id, input.id),
+      });
+      if (!event) return undefined;
+
+      // group event odds by type id as array of objects
+      const odds = event.odds.reduce(
+        (acc, odd) => {
+          const type = acc.find((type) => type.id === odd.type.id);
+          if (type) {
+            type.options.push({ ...odd.option, odd: odd.value });
+          } else {
+            acc.push({
+              id: odd.type.id,
+              name: odd.type.name,
+              options: [{ ...odd.option, odd: odd.value }],
+            });
+          }
+          return acc;
+        },
+        [] as {
+          id: number;
+          name: string;
+          options: { id: number; value: string; odd: number }[];
+        }[],
+      );
+
+      return {
+        ...event,
+        odds,
+      };
+    }),
   getAllWithOdds: authorizedProcedure.query(
     async ({ ctx }) =>
       await ctx.db.query.events.findMany({
