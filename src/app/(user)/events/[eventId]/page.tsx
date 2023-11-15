@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatOdds } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -33,7 +34,7 @@ export default async function EventPage({ params }: EventPageParams) {
               {odd.options.map((option) => (
                 <div key={option.id} className="flex flex-col text-center">
                   <p>{option.value}</p>
-                  <Button>{option.odd / 100}</Button>
+                  <Button>{formatOdds(option.odd)}</Button>
                 </div>
               ))}
             </CardContent>

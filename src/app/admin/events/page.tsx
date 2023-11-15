@@ -22,6 +22,7 @@ import { api } from "@/trpc/server";
 import { LineChart } from "lucide-react";
 import Link from "next/link";
 import { EventOptionsMenu } from "./_components/event-options-menu";
+import { formatOdds } from "@/lib/utils";
 
 export default async function EventsPage() {
   const events = await api.events.getAllWithOdds.query();
@@ -74,9 +75,7 @@ export default async function EventsPage() {
                     {event.odds.map((odd) => (
                       <span key={odd.type.name + odd.option.value}>
                         {odd.type.name} | {odd.option.value} -{" "}
-                        {new Intl.NumberFormat("pl-PL", {
-                          minimumFractionDigits: 2,
-                        }).format(odd.value / 100)}
+                        {formatOdds(odd.value)}
                       </span>
                     ))}
                   </DialogContent>

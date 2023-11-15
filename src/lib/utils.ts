@@ -21,3 +21,9 @@ export function slugify(str: string) {
     .trim()
     .replace(/[-\s]+/g, "-");
 }
+
+export function formatOdds(odds: number) {
+  return new Intl.NumberFormat("pl-PL", {
+    minimumFractionDigits: 2,
+  }).format(odds / 100);
+}
