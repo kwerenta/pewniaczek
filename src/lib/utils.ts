@@ -22,7 +22,7 @@ export function slugify(str: string) {
     .replace(/[-\s]+/g, "-");
 }
 
-export function formatOdds(odds: number) {
+export function formatDecimalValue(odds: number) {
   return new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 2,
   }).format(odds / 100);

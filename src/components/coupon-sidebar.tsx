@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { formatOdds } from "@/lib/utils";
+import { formatDecimalValue } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
 
 export function CouponSidebar() {
@@ -48,7 +48,8 @@ export function CouponSidebar() {
                     {bet.type.name} | {bet.option.value}
                   </p>
                   <p>
-                    {bet.amount} PLN x {formatOdds(bet.odds)}
+                    {formatDecimalValue(bet.amount)} PLN x{" "}
+                    {formatDecimalValue(bet.odds)}
                   </p>
                 </div>
                 <Button

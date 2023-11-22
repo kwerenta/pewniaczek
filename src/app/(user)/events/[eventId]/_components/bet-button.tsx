@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { type Bet, useCouponStore } from "@/lib/stores/coupon";
-import { formatOdds } from "@/lib/utils";
+import { formatDecimalValue } from "@/lib/utils";
 
 interface BetButtonProps {
   eventId: string;
@@ -18,7 +18,7 @@ export function BetButton({ eventId, option, type, odds }: BetButtonProps) {
     <Button
       onClick={() => addBet({ eventId, option, type, amount: 1000, odds })}
     >
-      {formatOdds(odds)}
+      {formatDecimalValue(odds)}
     </Button>
   );
 }
