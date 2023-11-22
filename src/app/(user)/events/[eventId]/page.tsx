@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatOdds } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BetButton } from "./_components/bet-button";
 
 interface EventPageParams {
   params: { eventId: string };
@@ -34,7 +33,12 @@ export default async function EventPage({ params }: EventPageParams) {
               {odd.options.map((option) => (
                 <div key={option.id} className="flex flex-col text-center">
                   <p>{option.value}</p>
-                  <Button>{formatOdds(option.odd)}</Button>
+                  <BetButton
+                    eventId={event.id}
+                    odds={option.odd}
+                    option={option}
+                    type={{ id: odd.id, name: odd.name }}
+                  />
                 </div>
               ))}
             </CardContent>
