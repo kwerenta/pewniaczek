@@ -19,6 +19,8 @@ export function CouponSidebar() {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const removeBet = useCouponStore((state) => state.removeBet);
 
+  const amount = bets.reduce((acc, bet) => acc + bet.amount, 0);
+
   const placeCoupon = () => {
     console.log(bets);
   };
@@ -64,8 +66,22 @@ export function CouponSidebar() {
             ))
           )}
         </CardContent>
-        <CardFooter className="mt-auto">
-          <Button onClick={placeCoupon}>Obstaw</Button>
+        <CardFooter className="mt-auto justify-between">
+          <Button disabled={amount <= 0} onClick={placeCoupon}>
+            Obstaw {formatDecimalValue(amount)} PLN
+          </Button>
+          <div>
+            <p className="font-bold">Do wygrania</p>
+            <p>
+              {formatDecimalValue(
+                bets.reduce(
+                  (acc, bet) => acc + (bet.amount * bet.odds) / 100,
+                  0,
+                ),
+              )}{" "}
+              PLN
+            </p>
+          </div>
         </CardFooter>
       </Card>
     </aside>

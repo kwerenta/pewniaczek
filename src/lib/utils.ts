@@ -25,5 +25,6 @@ export function slugify(str: string) {
 export function formatDecimalValue(odds: number) {
   return new Intl.NumberFormat("pl-PL", {
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(odds / 100);
 }
