@@ -1,55 +1,48 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
-  char,
-  index,
-  int,
-  mysqlEnum,
-  mysqlTable,
-  primaryKey,
-  serial,
+  integer,
+  sqliteTable,
   text,
-  timestamp,
+  primaryKey,
   uniqueIndex,
-  varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
-export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar("image", { length: 255 }),
+export const users = sqliteTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").notNull(),
+  emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
+  image: text("image"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
 }));
 
-export const accounts = mysqlTable(
+export const accounts = sqliteTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
     access_token: text("access_token"),
-    expires_at: int("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
     id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
+    session_state: text("session_state"),
   },
   (account) => ({
-    compoundKey: primaryKey(account.provider, account.providerAccountId),
-    userIdIdx: index("userId_idx").on(account.userId),
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
   }),
 );
 
@@ -57,82 +50,83 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
-export const sessions = mysqlTable(
-  "session",
-  {
-    sessionToken: varchar("sessionToken", { length: 255 })
-      .notNull()
-      .primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (session) => ({
-    userIdIdx: index("userId_idx").on(session.userId),
-  }),
-);
+export const sessions = sqliteTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
+});
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
-export const verificationTokens = mysqlTable(
+export const verificationTokens = sqliteTable(
   "verificationToken",
   {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
   },
   (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   }),
 );
 
-export const whitelist = mysqlTable("whitelist", {
-  email: varchar("email", { length: 255 }).notNull().primaryKey(),
+export const whitelist = sqliteTable("whitelist", {
+  email: text("email").notNull().primaryKey(),
 });
 
-export const admins = mysqlTable("admins", {
-  userId: varchar("user_id", { length: 255 }).notNull().primaryKey(),
+export const admins = sqliteTable("admins", {
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" })
+    .primaryKey(),
 });
 
-export const categories = mysqlTable(
+export const categories = sqliteTable(
   "category",
   {
-    id: serial("id").primaryKey(),
-    name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull(),
+    id: integer("id").primaryKey(),
+    name: text("name").notNull(),
+    slug: text("slug").notNull(),
   },
   (table) => ({
     uniqueSlugIndex: uniqueIndex("unique_slug_index").on(table.slug),
   }),
 );
 
-export const betTypes = mysqlTable("bet_type", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const betTypes = sqliteTable("bet_type", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
 });
 
 export const betTypesRelations = relations(betTypes, ({ many }) => ({
   optionsOnTypes: many(betOptionsOnTypes),
 }));
 
-export const betOptions = mysqlTable("bet_option", {
-  id: serial("id").primaryKey(),
-  value: varchar("value", { length: 255 }).notNull(),
+export const betOptions = sqliteTable("bet_option", {
+  id: integer("id").primaryKey(),
+  value: text("value").notNull(),
 });
 
 export const betOptionsRelations = relations(betOptions, ({ many }) => ({
   optionsOnTypes: many(betOptionsOnTypes),
 }));
 
-export const betOptionsOnTypes = mysqlTable(
+export const betOptionsOnTypes = sqliteTable(
   "bet_option_on_type",
   {
-    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
-    optionId: bigint("bet_option_id", { mode: "number" }).notNull(),
+    typeId: integer("bet_type_id")
+      .notNull()
+      .references(() => betTypes.id, { onDelete: "cascade" }),
+    optionId: integer("bet_option_id")
+      .notNull()
+      .references(() => betOptions.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    compoundKey: primaryKey(table.typeId, table.optionId),
+    compoundKey: primaryKey({ columns: [table.typeId, table.optionId] }),
   }),
 );
 
@@ -150,15 +144,19 @@ export const betOptionsOnTypesRelations = relations(
   }),
 );
 
-export const events = mysqlTable("event", {
-  id: char("id", { length: 36 }).primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  time: timestamp("time", { mode: "date" }).notNull(),
-  categoryId: bigint("category_id", { mode: "number" }).notNull(),
-  status: mysqlEnum("status", ["upcoming", "live", "finished", "cancelled"])
+export const events = sqliteTable("event", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  time: integer("time", { mode: "timestamp_ms" }).notNull(),
+  categoryId: integer("category_id").notNull(),
+  status: text("status", {
+    enum: ["upcoming", "live", "finished", "cancelled"],
+  })
     .notNull()
     .default("upcoming"),
-  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
 });
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
@@ -172,14 +170,18 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
 
 export type EventStatus = typeof events.$inferSelect.status;
 
-export const betTypesOnEvents = mysqlTable(
+export const betTypesOnEvents = sqliteTable(
   "bet_type_on_event",
   {
-    eventId: char("event_id", { length: 36 }).notNull(),
-    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    typeId: integer("bet_type_id")
+      .notNull()
+      .references(() => betTypes.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    compoundKey: primaryKey(table.eventId, table.typeId),
+    compoundKey: primaryKey({ columns: [table.eventId, table.typeId] }),
   }),
 );
 
@@ -197,16 +199,24 @@ export const betTypesOnEventsRelations = relations(
   }),
 );
 
-export const odds = mysqlTable(
+export const odds = sqliteTable(
   "odds",
   {
-    eventId: char("event_id", { length: 36 }).notNull(),
-    typeId: bigint("bet_type_id", { mode: "number" }).notNull(),
-    optionId: bigint("bet_option_id", { mode: "number" }).notNull(),
-    value: int("value").notNull(),
+    eventId: text("event_id").notNull(),
+    typeId: integer("bet_type_id")
+      .notNull()
+      .references(() => betTypes.id, { onDelete: "cascade" }),
+    optionId: integer("bet_option_id")
+      .notNull()
+      .references(() => betOptions.id, {
+        onDelete: "cascade",
+      }),
+    value: integer("value").notNull(),
   },
   (table) => ({
-    compoundKey: primaryKey(table.eventId, table.typeId, table.optionId),
+    compoundKey: primaryKey({
+      columns: [table.eventId, table.typeId, table.optionId],
+    }),
   }),
 );
 

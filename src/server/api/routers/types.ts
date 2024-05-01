@@ -47,19 +47,25 @@ export const typesRouter = createTRPCRouter({
     .input(newOptionTypeSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
-        const { insertId: typeId } = await tx
+        const [insertedBetType] = await tx
           .insert(betTypes)
-          .values({ name: input.name });
+          .values({ name: input.name })
+          .returning({ id: betTypes.id });
 
-        const { insertId } = await tx
+        if (!insertedBetType) {
+          tx.rollback();
+          return;
+        }
+
+        const insertedOptions = await tx
           .insert(betOptions)
-          .values(input.options.map((opt) => ({ value: opt.value })));
-        const firstOptionId = Number(insertId);
+          .values(input.options.map((opt) => ({ value: opt.value })))
+          .returning({ id: betOptions.id });
 
         await tx.insert(betOptionsOnTypes).values(
-          input.options.map((_, index) => ({
-            typeId: Number(typeId),
-            optionId: firstOptionId + index,
+          insertedOptions.map((option) => ({
+            typeId: insertedBetType.id,
+            optionId: option.id,
           })),
         );
       });

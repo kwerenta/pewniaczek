@@ -8,7 +8,6 @@ import DiscordProvider from "next-auth/providers/discord";
 
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
-import { mysqlTable } from "drizzle-orm/mysql-core";
 import { admins, whitelist } from "./db/schema";
 import { eq } from "drizzle-orm";
 
@@ -68,7 +67,7 @@ export const authOptions: NextAuthOptions = {
           .limit(1)
       ).length === 1,
   },
-  adapter: DrizzleAdapter(db, mysqlTable),
+  adapter: DrizzleAdapter(db),
   pages: { signIn: "/login", error: "/whitelist" },
   providers: [
     DiscordProvider({
