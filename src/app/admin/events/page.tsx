@@ -25,7 +25,7 @@ import { EventOptionsMenu } from "./_components/event-options-menu";
 import { formatDecimalValue } from "@/lib/utils";
 
 export default async function EventsPage() {
-  const events = await api.events.getAllWithOdds.query();
+  const events = await api.events.getAllWithOdds();
 
   return (
     <PageShell>

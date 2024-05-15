@@ -14,7 +14,7 @@ import Link from "next/link";
 import DeleteTypeButton from "./_components/delete-type-button";
 
 export default async function TypesPage() {
-  const types = await api.types.getAllWithOptions.query();
+  const types = await api.types.getAllWithOptions();
   return (
     <PageShell>
       <PageHeader

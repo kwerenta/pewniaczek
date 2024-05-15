@@ -10,7 +10,7 @@ import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 
 export default async function CouponsPage() {
-  const coupons = await api.coupons.getAllByUser.query();
+  const coupons = await api.coupons.getAllByUser();
 
   return (
     <div className="space-y-4">

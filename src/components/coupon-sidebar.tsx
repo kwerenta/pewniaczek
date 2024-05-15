@@ -91,7 +91,7 @@ export function CouponSidebar() {
         <CardFooter className="mt-auto justify-between">
           <LoadingButton
             disabled={amount <= 0}
-            isLoading={couponMutation.isLoading}
+            isLoading={couponMutation.isPending}
             loadingText="Obstawianie..."
             onClick={placeCoupon}
           >

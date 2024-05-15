@@ -14,7 +14,7 @@ import Link from "next/link";
 import { DeleteCategoryButton } from "./_components/delete-category-button";
 
 export default async function CategoriesPage() {
-  const categories = await api.categories.getAll.query();
+  const categories = await api.categories.getAll();
 
   return (
     <PageShell>

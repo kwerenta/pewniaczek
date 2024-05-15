@@ -6,8 +6,8 @@ import { NewEventForm } from "../_components/new-event-form";
 import { api } from "@/trpc/server";
 
 export default async function NewEventPage() {
-  const betTypesWithOptions = await api.types.getAllWithOptions.query();
-  const categories = await api.categories.getAll.query();
+  const betTypesWithOptions = await api.types.getAllWithOptions();
+  const categories = await api.categories.getAll();
 
   return (
     <PageShell>

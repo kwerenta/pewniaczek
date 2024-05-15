@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { newEventSchema, type NewEventInput } from "@/lib/validators/event";
-import { type RouterOutputs } from "@/trpc/shared";
+import { type RouterOutputs } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addHours, format, setHours, setMinutes, startOfToday } from "date-fns";
 import { pl } from "date-fns/locale";

@@ -9,7 +9,7 @@ interface EventPageParams {
 }
 
 export default async function EventPage({ params }: EventPageParams) {
-  const event = await api.events.getEventById.query({ id: params.eventId });
+  const event = await api.events.getEventById({ id: params.eventId });
   if (!event) return notFound();
 
   return (

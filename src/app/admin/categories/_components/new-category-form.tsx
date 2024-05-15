@@ -88,7 +88,7 @@ export function NewCategoryForm() {
           </p>
         </div>
         <LoadingButton
-          isLoading={categoryMutation.isLoading}
+          isLoading={categoryMutation.isPending}
           loadingText="Tworzenie..."
           type="submit"
         >

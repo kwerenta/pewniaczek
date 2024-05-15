@@ -15,7 +15,7 @@ export function DeleteCategoryButton({
 }: DeleteCategoryButtonProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { mutate, isLoading } = api.categories.delete.useMutation({
+  const { mutate, isPending } = api.categories.delete.useMutation({
     onSuccess() {
       router.refresh();
       toast({
@@ -32,7 +32,7 @@ export function DeleteCategoryButton({
   });
   return (
     <Button
-      disabled={isLoading}
+      disabled={isPending}
       variant="outline"
       size="icon"
       onClick={() => mutate({ id: categoryId })}

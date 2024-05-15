@@ -6,11 +6,12 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { admins, whitelist } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { sqliteTable } from "drizzle-orm/sqlite-core";
+import { type Adapter } from "next-auth/adapters";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -68,7 +69,7 @@ export const authOptions: NextAuthOptions = {
           .limit(1)
       ).length === 1,
   },
-  adapter: DrizzleAdapter(db, sqliteTable),
+  adapter: DrizzleAdapter(db, sqliteTable) as Adapter,
   pages: { signIn: "/login", error: "/whitelist" },
   providers: [
     DiscordProvider({

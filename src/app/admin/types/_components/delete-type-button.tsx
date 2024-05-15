@@ -14,7 +14,7 @@ export default function DeleteTypeButton({ typeId }: DeleteTypeButtonProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { mutate, isLoading } = api.types.delete.useMutation({
+  const { mutate, isPending } = api.types.delete.useMutation({
     onSuccess: () => {
       router.refresh();
       toast({
@@ -32,7 +32,7 @@ export default function DeleteTypeButton({ typeId }: DeleteTypeButtonProps) {
 
   return (
     <Button
-      disabled={isLoading}
+      disabled={isPending}
       variant="outline"
       size="icon"
       onClick={() => mutate({ id: typeId })}

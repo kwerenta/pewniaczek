@@ -11,7 +11,7 @@ import { pl } from "date-fns/locale";
 import Link from "next/link";
 
 export default async function Home() {
-  const events = await api.events.getAllWithCategory.query();
+  const events = await api.events.getAllWithCategory();
   return (
     <div className="space-y-4">
       {events.map((event) => (

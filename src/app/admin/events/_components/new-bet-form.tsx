@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { type NewEventInput } from "@/lib/validators/event";
-import { type RouterOutputs } from "@/trpc/shared";
+import { type RouterOutputs } from "@/trpc/react";
 import { CheckIcon, ChevronsUpDown, Trash2 } from "lucide-react";
 import {
   useFieldArray,
