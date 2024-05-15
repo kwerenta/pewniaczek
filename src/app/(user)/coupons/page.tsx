@@ -23,17 +23,7 @@ export default async function CouponsPage() {
                 : "Zakład kumulowany"}
             </CardTitle>
             <CardDescription>
-              Kurs:{" "}
-              {formatDecimalValue(
-                coupon.bets.reduce(
-                  (odds, bet) =>
-                    coupon.type === "single"
-                      ? odds + bet.odds
-                      : odds * bet.odds,
-                  coupon.type === "single" ? 0 : 1,
-                ),
-              )}{" "}
-              | Stawka:{" "}
+              Stawka:{" "}
               {formatDecimalValue(
                 (coupon.type === "single"
                   ? coupon.bets.reduce(
@@ -42,6 +32,17 @@ export default async function CouponsPage() {
                       0,
                     )
                   : coupon.amount) ?? 0,
+              )}{" "}
+              PLN | Do wygrania:{" "}
+              {formatDecimalValue(
+                coupon.type === "single"
+                  ? coupon.bets.reduce(
+                      (sum, bet) =>
+                        sum + (bet.amount ? (bet.amount * bet.odds) / 100 : 0),
+                      0,
+                    )
+                  : (coupon.amount ?? 0) *
+                      coupon.bets.reduce((odds, bet) => odds * bet.odds, 1),
               )}{" "}
               PLN
             </CardDescription>

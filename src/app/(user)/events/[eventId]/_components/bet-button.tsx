@@ -8,20 +8,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { type Bet, useCouponStore } from "@/lib/stores/coupon";
+import { useCouponStore } from "@/lib/stores/coupon";
 import { formatDecimalValue } from "@/lib/utils";
+import { type BetOption, type BetType } from "@/server/db/schema";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useState } from "react";
 
 interface BetButtonProps {
   eventId: string;
-  option: Bet["option"];
-  type: Bet["type"];
+  option: BetOption;
+  type: BetType;
   odds: number;
 }
 
 export function BetButton({ eventId, option, type, odds }: BetButtonProps) {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const addBet = useCouponStore((state) => state.addBet);
   const [amount, setAmount] = useState(0);
 

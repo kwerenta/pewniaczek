@@ -104,6 +104,8 @@ export const betTypes = sqliteTable("bet_type", {
   name: text("name").notNull(),
 });
 
+export type BetType = typeof betTypes.$inferSelect;
+
 export const betTypesRelations = relations(betTypes, ({ many }) => ({
   optionsOnTypes: many(betOptionsOnTypes),
 }));
@@ -112,6 +114,8 @@ export const betOptions = sqliteTable("bet_option", {
   id: integer("id").primaryKey(),
   value: text("value").notNull(),
 });
+
+export type BetOption = typeof betOptions.$inferSelect;
 
 export const betOptionsRelations = relations(betOptions, ({ many }) => ({
   optionsOnTypes: many(betOptionsOnTypes),
@@ -287,6 +291,8 @@ export const bets = sqliteTable(
     }),
   }),
 );
+
+export type Bet = typeof bets.$inferSelect;
 
 export const betsRelations = relations(bets, ({ one }) => ({
   coupon: one(coupons, { fields: [bets.couponId], references: [coupons.id] }),

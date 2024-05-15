@@ -9,11 +9,12 @@ interface LoadingButtonProps extends ButtonProps {
 export function LoadingButton({
   isLoading,
   loadingText,
+  disabled,
   children,
   ...props
 }: LoadingButtonProps) {
   return (
-    <Button disabled={isLoading} {...props}>
+    <Button disabled={!!disabled || isLoading} {...props}>
       {isLoading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

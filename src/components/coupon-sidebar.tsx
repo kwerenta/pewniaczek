@@ -12,17 +12,39 @@ import {
 } from "./ui/card";
 import { formatDecimalValue } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
+import { api } from "@/trpc/react";
+import { LoadingButton } from "./loading-button";
+import { useRouter } from "next/navigation";
 
 export function CouponSidebar() {
+  const router = useRouter();
+  const couponMutation = api.coupons.create.useMutation();
+
   const bets = useCouponStore((state) => state.bets);
-
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const removeBet = useCouponStore((state) => state.removeBet);
+  const clearCoupon = useCouponStore((state) => state.clearCoupon);
 
-  const amount = bets.reduce((acc, bet) => acc + bet.amount, 0);
+  const amount = bets.reduce(
+    (acc, bet) => (bet.amount ? acc + bet.amount : acc),
+    0,
+  );
 
   const placeCoupon = () => {
-    console.log(bets);
+    couponMutation.mutate(
+      bets.map((bet) => ({
+        eventId: bet.eventId,
+        typeId: bet.type.id,
+        optionId: bet.option.id,
+        amount: bet.amount ?? 0,
+        odds: bet.odds,
+      })),
+      {
+        onSuccess: () => {
+          clearCoupon();
+          router.refresh();
+        },
+      },
+    );
   };
 
   return (
@@ -50,7 +72,7 @@ export function CouponSidebar() {
                     {bet.type.name} | {bet.option.value}
                   </p>
                   <p>
-                    {formatDecimalValue(bet.amount)} PLN x{" "}
+                    {formatDecimalValue(bet.amount ?? 0)} PLN x{" "}
                     {formatDecimalValue(bet.odds)}
                   </p>
                 </div>
@@ -67,15 +89,22 @@ export function CouponSidebar() {
           )}
         </CardContent>
         <CardFooter className="mt-auto justify-between">
-          <Button disabled={amount <= 0} onClick={placeCoupon}>
+          <LoadingButton
+            disabled={amount <= 0}
+            isLoading={couponMutation.isLoading}
+            loadingText="Obstawianie..."
+            onClick={placeCoupon}
+          >
             Obstaw {formatDecimalValue(amount)} PLN
-          </Button>
+          </LoadingButton>
+
           <div>
             <p className="font-bold">Do wygrania</p>
             <p>
               {formatDecimalValue(
                 bets.reduce(
-                  (acc, bet) => acc + (bet.amount * bet.odds) / 100,
+                  (acc, bet) =>
+                    acc + (bet.amount ? (bet.amount * bet.odds) / 100 : 0),
                   0,
                 ),
               )}{" "}
